@@ -71,7 +71,7 @@ func (c *Default) PagerList() ([]*Pager, error) {
 func (c *Default) PatientList() ([]*Patient, error) {
 	var out []*Patient
 
-	uri := fmt.Sprintf(pathPatient, c.base)
+	uri := fmt.Sprintf(pathPatients, c.base)
 	err := c.get(uri, &out)
 
 	return out, err
