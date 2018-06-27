@@ -15,9 +15,6 @@ const (
 
 // ClientAPI describes a client API
 type ClientAPI interface {
-	// SetCredentials sets authentication credentials
-	SetCredentials(string, string)
-
 	// ClientList returns a list of all clients
 	ClientList() ([]*Client, error)
 
@@ -39,18 +36,15 @@ type Default struct {
 	password    string
 }
 
-func NewClient(uri string) ClientAPI {
+func NewClient(uri string, username, password string) ClientAPI {
 	return &Default{
 		client: &http.Client{
 			Timeout: time.Second * 10,
 		},
-		base:   uri,
+		base:     uri,
+		username: username,
+		password: password,
 	}
-}
-
-func (c *Default) SetCredentials(username, password string) {
-	c.username = username
-	c.password = password
 }
 
 func (c *Default) ClientList() ([]*Client, error) {
