@@ -26,6 +26,9 @@ type ClientAPI interface {
 
 	// PatientGet returns a patient
 	PatientGet(string) (*Patient, error)
+
+	// PatientAdd adds a patient
+	PatientAdd(*Patient) (*Patient, error)
 }
 
 // Default implements the client interface
@@ -79,6 +82,15 @@ func (c *Default) PatientGet(id string) (*Patient, error) {
 
 	uri := fmt.Sprintf(pathPatient, c.base, id)
 	err := c.get(uri, out)
+
+	return out, err
+}
+
+func (c *Default) PatientAdd(patient *Patient) (*Patient, error) {
+	out := &Patient{}
+
+	uri := fmt.Sprintf(pathPatients, c.base)
+	err := c.post(uri, patient, out)
 
 	return out, err
 }
