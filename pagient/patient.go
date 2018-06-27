@@ -16,6 +16,7 @@ const (
 // Patient API model
 type Patient struct {
 	ID       uuid.UUID    `json:"id"`
+	Ssn      string       `json:"ssn"`
 	Name     string       `json:"name"`
 	PagerID  int          `json:"pager_id,omitempty"`
 	ClientID int          `json:"client_id,omitempty"`
