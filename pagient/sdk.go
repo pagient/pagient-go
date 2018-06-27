@@ -29,6 +29,9 @@ type ClientAPI interface {
 
 	// PatientAdd adds a patient
 	PatientAdd(*Patient) (*Patient, error)
+
+	// PatientRemove removes a patient
+	PatientRemove(string) error
 }
 
 // Default implements the client interface
@@ -93,4 +96,11 @@ func (c *Default) PatientAdd(patient *Patient) (*Patient, error) {
 	err := c.post(uri, patient, out)
 
 	return out, err
+}
+
+func (c *Default) PatientRemove(id string) error {
+	uri := fmt.Sprintf(pathPatient, c.base, id)
+	err := c.delete(uri, nil)
+
+	return err
 }
