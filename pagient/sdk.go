@@ -28,7 +28,7 @@ type ClientAPI interface {
 	PatientGet(string) (*Patient, error)
 
 	// PatientAdd adds a patient
-	PatientAdd(*Patient) (*Patient, error)
+	PatientAdd(*Patient) error
 
 	// PatientRemove removes a patient
 	PatientRemove(string) error
@@ -89,13 +89,11 @@ func (c *Default) PatientGet(id string) (*Patient, error) {
 	return out, err
 }
 
-func (c *Default) PatientAdd(patient *Patient) (*Patient, error) {
-	out := &Patient{}
-
+func (c *Default) PatientAdd(patient *Patient) error {
 	uri := fmt.Sprintf(pathPatients, c.base)
-	err := c.post(uri, patient, out)
+	err := c.post(uri, patient, patient)
 
-	return out, err
+	return err
 }
 
 func (c *Default) PatientRemove(id string) error {
