@@ -1,16 +1,16 @@
 package pagient
 
 import (
+	"fmt"
 	"net/http"
 	"time"
-	"fmt"
 )
 
 const (
-	pathClients     = "%s/clients"
-	pathPagers      = "%s/pagers"
-	pathPatients    = "%s/patients"
-	pathPatient     = "%s/patients/%v"
+	pathClients  = "%s/clients"
+	pathPagers   = "%s/pagers"
+	pathPatients = "%s/patients"
+	pathPatient  = "%s/patients/%v"
 )
 
 // ClientAPI describes a client API
@@ -36,10 +36,10 @@ type ClientAPI interface {
 
 // Default implements the client interface
 type Default struct {
-	client      *http.Client
-	base        string
-	username    string
-	password    string
+	client   *http.Client
+	base     string
+	username string
+	password string
 }
 
 func NewClient(uri string, username, password string) ClientAPI {
