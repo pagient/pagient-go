@@ -120,3 +120,30 @@ func (c *Default) stream(rawurl, method string, in, out interface{}) (io.ReadClo
 
 	return resp.Body, nil
 }
+
+// IsNotFound returns whether it's a 404 or not
+func IsNotFound(err error) bool {
+	if err.Error() == "Resource not found." {
+		return true
+	}
+
+	return false
+}
+
+// IsBadRequest returns whether it's a 400 or not
+func IsBadRequest(err error) bool {
+	if err.Error() == "Invalid request." {
+		return true
+	}
+
+	return false
+}
+
+// IsUnprocessableEntity returns whether it's a 422 or not
+func IsUnprocessableEntity(err error) bool {
+	if err.Error() == "Validation error." || err.Error() == "Error rendering renderer." {
+		return true
+	}
+
+	return false
+}
