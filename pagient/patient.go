@@ -1,7 +1,5 @@
 package pagient
 
-import "github.com/satori/go.uuid"
-
 // PatientState hold the state of the Patient
 type PatientState string
 
@@ -15,7 +13,7 @@ const (
 
 // Patient API model
 type Patient struct {
-	ID       uuid.UUID    `json:"id"`
+	ID       int          `json:"id"`
 	Ssn      string       `json:"ssn"`
 	Name     string       `json:"name"`
 	PagerID  int          `json:"pager_id,omitempty"`
