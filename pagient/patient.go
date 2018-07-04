@@ -7,6 +7,8 @@ type PatientState string
 const (
 	// PatientStateNew is for when the Patient is Pending
 	PatientStatePending PatientState = "pending"
+	// PatientStateCall is for when the  Patient's pager gets called
+	PatientStateCall PatientState = "call"
 	// PatientStateCalled is for when the Patient's Pager has been called
 	PatientStateCalled PatientState = "called"
 )
@@ -19,6 +21,7 @@ type Patient struct {
 	PagerID  int          `json:"pager_id,omitempty"`
 	ClientID int          `json:"client_id,omitempty"`
 	Status   PatientState `json:"status"`
+	Active   bool         `json:"active"`
 }
 
 func (p *Patient) String() string {
