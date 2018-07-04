@@ -7,10 +7,10 @@ import (
 )
 
 const (
-	pathClients  = "%s/clients"
-	pathPagers   = "%s/pagers"
-	pathPatients = "%s/patients"
-	pathPatient  = "%s/patients/%v"
+	pathClients  = "%s/api/clients"
+	pathPagers   = "%s/api/pagers"
+	pathPatients = "%s/api/patients"
+	pathPatient  = "%s/api/patients/%v"
 )
 
 // ClientAPI describes a client API
