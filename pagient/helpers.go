@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 const (
@@ -117,29 +118,32 @@ func (c *Default) stream(rawurl, method string, in, out interface{}) (io.ReadClo
 	return resp.Body, nil
 }
 
-// IsNotFound returns whether it's a 404 or not
-func IsNotFound(err error) bool {
-	if err.Error() == "Resource not found." {
-		return true
-	}
-
-	return false
+// IsNotFoundError returns whether it's a 404 or not
+func IsNotFoundError(err error) bool {
+	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusNotFound)
 }
 
-// IsBadRequest returns whether it's a 400 or not
-func IsBadRequest(err error) bool {
-	if err.Error() == "Invalid request." {
-		return true
-	}
-
-	return false
+// IsBadRequestError returns whether it's a 400 or not
+func IsBadRequestError(err error) bool {
+	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusBadRequest)
 }
 
-// IsUnprocessableEntity returns whether it's a 422 or not
-func IsUnprocessableEntity(err error) bool {
-	if err.Error() == "Validation error." || err.Error() == "Error rendering renderer." {
-		return true
-	}
+// IsUnprocessableEntityError returns whether it's a 422 or not
+func IsUnprocessableEntityError(err error) bool {
+	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusUnprocessableEntity)
+}
 
-	return false
+// IsGatewayTimeoutError returns whether it's a 504 or not
+func IsGatewayTimeoutError(err error) bool {
+	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusGatewayTimeout)
+}
+
+// IsGatewayTimeoutError returns whether it's a 500 or not
+func IsInternalServerError(err error) bool {
+	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusInternalServerError)
+}
+
+// IsGatewayTimeoutError returns whether it's a 409 or not
+func IsConflictError(err error) bool {
+	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusConflict)
 }
