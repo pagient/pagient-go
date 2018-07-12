@@ -87,10 +87,6 @@ func (c *Default) stream(rawurl, method string, in, out interface{}) (io.ReadClo
 		UserAgent,
 	)
 
-	if c.username != "" && c.password != "" {
-		req.SetBasicAuth(c.username, c.password)
-	}
-
 	if in != nil {
 		req.Header.Set(
 			"Content-Type",
