@@ -11,6 +11,8 @@ const (
 	PatientStateCall PatientState = "call"
 	// PatientStateCalled is for when the Patient's Pager has been called
 	PatientStateCalled PatientState = "called"
+	// PatientStateFinished is for when the Patient is Finished with his medical examination
+	PatientStateFinished PatientState = "finished"
 )
 
 // Patient API model
