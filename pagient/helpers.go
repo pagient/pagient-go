@@ -118,32 +118,37 @@ func (c *Default) stream(rawurl, method string, in, out interface{}) (io.ReadClo
 	return resp.Body, nil
 }
 
-// IsNotFoundError returns whether it's a 404 or not
-func IsNotFoundError(err error) bool {
-	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusNotFound)
-}
-
-// IsBadRequestError returns whether it's a 400 or not
-func IsBadRequestError(err error) bool {
+// IsBadRequestErr returns whether it's a 400 or not
+func IsBadRequestErr(err error) bool {
 	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusBadRequest)
 }
 
-// IsUnprocessableEntityError returns whether it's a 422 or not
-func IsUnprocessableEntityError(err error) bool {
+// IsUnauthorizedErr returns whether it's a 401 or not
+func IsUnauthorizedErr(err error) bool {
+	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusUnauthorized)
+}
+
+// IsNotFoundErr returns whether it's a 404 or not
+func IsNotFoundErr(err error) bool {
+	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusNotFound)
+}
+
+// IsConflictErr returns whether it's a 409 or not
+func IsConflictErr(err error) bool {
+	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusConflict)
+}
+
+// IsUnprocessableEntityErr returns whether it's a 422 or not
+func IsUnprocessableEntityErr(err error) bool {
 	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusUnprocessableEntity)
 }
 
-// IsGatewayTimeoutError returns whether it's a 504 or not
-func IsGatewayTimeoutError(err error) bool {
-	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusGatewayTimeout)
-}
-
-// IsInternalServerError returns whether it's a 500 or not
-func IsInternalServerError(err error) bool {
+// IsInternalServerErr returns whether it's a 500 or not
+func IsInternalServerErr(err error) bool {
 	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusInternalServerError)
 }
 
-// IsConflictError returns whether it's a 409 or not
-func IsConflictError(err error) bool {
-	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusConflict)
+// IsGatewayTimeoutErr returns whether it's a 504 or not
+func IsGatewayTimeoutErr(err error) bool {
+	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusGatewayTimeout)
 }
