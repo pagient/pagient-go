@@ -60,21 +60,22 @@ type ClientAPI interface {
 
 // Default implements the client interface
 type Default struct {
-	client   *http.Client
-	base     string
-	token    string
+	client *http.Client
+	base   string
+	token  string
 }
 
+// NewClient returns a default client
 func NewClient(uri string) ClientAPI {
 	return &Default{
 		client: &http.Client{
 			Timeout: time.Second * 10,
 		},
-		base:   uri,
+		base: uri,
 	}
 }
 
-// NewClientToken returns a client that authenticates
+// NewTokenClient returns a client that authenticates
 // all outbound requests with the given token.
 func NewTokenClient(uri, token string) ClientAPI {
 	config := oauth2.Config{}
@@ -160,6 +161,7 @@ func (c *Default) AuthLogin(username, password string) (*Token, error) {
 	return out, err
 }
 
+// ClientList returns a list of clients
 func (c *Default) ClientList() ([]*Client, error) {
 	var out []*Client
 
@@ -169,6 +171,7 @@ func (c *Default) ClientList() ([]*Client, error) {
 	return out, err
 }
 
+// PagerList returns a list of pagers
 func (c *Default) PagerList() ([]*Pager, error) {
 	var out []*Pager
 
@@ -178,6 +181,7 @@ func (c *Default) PagerList() ([]*Pager, error) {
 	return out, err
 }
 
+// PatientList returns a list of patients
 func (c *Default) PatientList() ([]*Patient, error) {
 	var out []*Patient
 
@@ -187,6 +191,7 @@ func (c *Default) PatientList() ([]*Patient, error) {
 	return out, err
 }
 
+// PatientGet returns a patient by ID
 func (c *Default) PatientGet(id int) (*Patient, error) {
 	out := &Patient{}
 
@@ -196,6 +201,7 @@ func (c *Default) PatientGet(id int) (*Patient, error) {
 	return out, err
 }
 
+// PatientAdd adds a patient
 func (c *Default) PatientAdd(patient *Patient) error {
 	uri := fmt.Sprintf(pathPatients, c.base)
 	err := c.post(uri, patient, patient)
@@ -203,6 +209,7 @@ func (c *Default) PatientAdd(patient *Patient) error {
 	return err
 }
 
+// PatientUpdate updates a patient
 func (c *Default) PatientUpdate(patient *Patient) error {
 	uri := fmt.Sprintf(pathPatient, c.base, patient.ID)
 	err := c.post(uri, patient, patient)
@@ -210,6 +217,7 @@ func (c *Default) PatientUpdate(patient *Patient) error {
 	return err
 }
 
+// PatientRemove removes a patient by ID
 func (c *Default) PatientRemove(id int) error {
 	uri := fmt.Sprintf(pathPatient, c.base, id)
 	err := c.delete(uri, nil)

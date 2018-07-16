@@ -138,12 +138,12 @@ func IsGatewayTimeoutError(err error) bool {
 	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusGatewayTimeout)
 }
 
-// IsGatewayTimeoutError returns whether it's a 500 or not
+// IsInternalServerError returns whether it's a 500 or not
 func IsInternalServerError(err error) bool {
 	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusInternalServerError)
 }
 
-// IsGatewayTimeoutError returns whether it's a 409 or not
+// IsConflictError returns whether it's a 409 or not
 func IsConflictError(err error) bool {
 	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusConflict)
 }
