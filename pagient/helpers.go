@@ -3,17 +3,15 @@ package pagient
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strings"
 )
 
 const (
 	// UserAgent defines the user agent header sent with each request.
-	UserAgent = "PagientGo"
+	userAgent = "PagientGo"
 )
 
 // Helper function for making an GET request.
@@ -44,7 +42,6 @@ func (c *Default) do(rawurl, method string, in, out interface{}) error {
 		in,
 		out,
 	)
-
 	if err != nil {
 		return err
 	}
@@ -85,7 +82,7 @@ func (c *Default) stream(rawurl, method string, in, out interface{}) (io.ReadClo
 
 	req.Header.Set(
 		"User-Agent",
-		UserAgent,
+		userAgent,
 	)
 
 	if in != nil {
@@ -106,49 +103,17 @@ func (c *Default) stream(rawurl, method string, in, out interface{}) (io.ReadClo
 		out, _ := ioutil.ReadAll(resp.Body)
 
 		msg := &Message{}
-		parse := json.Unmarshal(out, msg)
+		err := json.Unmarshal(out, msg)
 
-		if parse != nil {
-			return nil, fmt.Errorf(string(out))
+		if err != nil {
+			return nil, err
 		}
 
-		return nil, fmt.Errorf(msg.Message)
+		return nil, &clientHTTPErr{
+			msg: msg.ErrorText,
+			statusCode: msg.StatusCode,
+		}
 	}
 
 	return resp.Body, nil
-}
-
-// IsBadRequestErr returns whether it's a 400 or not
-func IsBadRequestErr(err error) bool {
-	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusBadRequest)
-}
-
-// IsUnauthorizedErr returns whether it's a 401 or not
-func IsUnauthorizedErr(err error) bool {
-	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusUnauthorized)
-}
-
-// IsNotFoundErr returns whether it's a 404 or not
-func IsNotFoundErr(err error) bool {
-	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusNotFound)
-}
-
-// IsConflictErr returns whether it's a 409 or not
-func IsConflictErr(err error) bool {
-	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusConflict)
-}
-
-// IsUnprocessableEntityErr returns whether it's a 422 or not
-func IsUnprocessableEntityErr(err error) bool {
-	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusUnprocessableEntity)
-}
-
-// IsInternalServerErr returns whether it's a 500 or not
-func IsInternalServerErr(err error) bool {
-	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusInternalServerError)
-}
-
-// IsGatewayTimeoutErr returns whether it's a 504 or not
-func IsGatewayTimeoutErr(err error) bool {
-	return strings.TrimSpace(err.Error()) == http.StatusText(http.StatusGatewayTimeout)
 }

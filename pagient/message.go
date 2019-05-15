@@ -2,6 +2,7 @@ package pagient
 
 // Message represents a standard response.
 type Message struct {
-	Status  int64  `json:"status"`
-	Message string `json:"message"`
+	StatusCode  int    `json:"status"`
+	Message     string `json:"message"`
+	ErrorText   string `json:"error"`
 }

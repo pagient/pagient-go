@@ -5,7 +5,6 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
-	"net/url"
 	"time"
 
 	"github.com/jackspirou/syscerts"
@@ -56,6 +55,65 @@ type ClientAPI interface {
 
 	// PatientRemove removes a patient
 	PatientRemove(int) error
+}
+
+type httpErr interface {
+	StatusCode() int
+}
+
+type clientHTTPErr struct {
+	msg string
+	statusCode int
+}
+
+func (err *clientHTTPErr) Error() string {
+	return err.msg
+}
+
+func (err *clientHTTPErr) StatusCode() int {
+	return err.statusCode
+}
+
+// IsBadRequestErr returns whether it's a 400 or not
+func IsBadRequestErr(err error) bool {
+	he, ok := err.(httpErr)
+	return ok && he.StatusCode() == http.StatusBadRequest
+}
+
+// IsUnauthorizedErr returns whether it's a 401 or not
+func IsUnauthorizedErr(err error) bool {
+	he, ok := err.(httpErr)
+	return ok && he.StatusCode() == http.StatusUnauthorized
+}
+
+// IsNotFoundErr returns whether it's a 404 or not
+func IsNotFoundErr(err error) bool {
+	he, ok := err.(httpErr)
+	return ok && he.StatusCode() == http.StatusNotFound
+}
+
+// IsConflictErr returns whether it's a 409 or not
+func IsConflictErr(err error) bool {
+	he, ok := err.(httpErr)
+	return ok && he.StatusCode() == http.StatusConflict
+}
+
+// IsUnprocessableEntityErr returns whether it's a 422 or not
+func IsUnprocessableEntityErr(err error) bool {
+	he, ok := err.(httpErr)
+	return ok && he.StatusCode() == http.StatusUnprocessableEntity
+}
+
+// IsInternalServerErr returns whether it's a 500 or not
+func IsInternalServerErr(err error) bool {
+	he, ok := err.(httpErr)
+	return ok && he.StatusCode() == http.StatusInternalServerError
+}
+
+// IsGatewayTimeoutErr returns whether it's a 504 or not
+func IsGatewayTimeoutErr(err error) bool {
+	he, ok := err.(httpErr)
+	return ok && he.StatusCode() == http.StatusGatewayTimeout
 }
 
 // Default implements the client interface
@@ -111,29 +169,12 @@ func (c *Default) IsAuthenticated() bool {
 		return false
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(pathAuthSessions, c.base))
-	if err != nil {
-		return false
-	}
+	var out []*Token
 
-	req, err := http.NewRequest("GET", uri.String(), nil)
-	if err != nil {
-		return false
-	}
+	uri := fmt.Sprintf(pathAuthSessions, c.base)
+	err := c.get(uri, out)
 
-	req.Header.Set(
-		"User-Agent",
-		UserAgent,
-	)
-
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return false
-	}
-
-	defer resp.Body.Close()
-
-	return resp.StatusCode == http.StatusOK
+	return err == nil
 }
 
 // SetClient sets the default http client. This should
