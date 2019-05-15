@@ -74,6 +74,11 @@ func (err *clientHTTPErr) StatusCode() int {
 	return err.statusCode
 }
 
+func IsHTTPErr(err error) bool {
+	he, ok := err.(httpErr)
+	return ok && he.StatusCode() != 0
+}
+
 // IsBadRequestErr returns whether it's a 400 or not
 func IsBadRequestErr(err error) bool {
 	he, ok := err.(httpErr)
