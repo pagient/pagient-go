@@ -4,7 +4,9 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"github.com/pkg/errors"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/jackspirou/syscerts"
@@ -57,68 +59,101 @@ type ClientAPI interface {
 	PatientRemove(int) error
 }
 
-type httpErr interface {
-	StatusCode() int
-}
-
-type clientHTTPErr struct {
+type httpResponseErr struct {
 	msg string
 	statusCode int
 }
 
-func (err *clientHTTPErr) Error() string {
-	return err.msg
+func (hre *httpResponseErr) Error() string {
+	return hre.msg
 }
 
-func (err *clientHTTPErr) StatusCode() int {
-	return err.statusCode
+func (hre *httpResponseErr) StatusCode() int {
+	return hre.statusCode
 }
 
-func IsHTTPErr(err error) bool {
-	he, ok := err.(httpErr)
-	return ok && he.StatusCode() != 0
+func IsHTTPResponseErr(err error) bool {
+	e, ok := errors.Cause(err).(*httpResponseErr)
+	return ok && e.StatusCode() != 0
 }
 
 // IsBadRequestErr returns whether it's a 400 or not
 func IsBadRequestErr(err error) bool {
-	he, ok := err.(httpErr)
-	return ok && he.StatusCode() == http.StatusBadRequest
+	e, ok := errors.Cause(err).(*httpResponseErr)
+	return ok && e.StatusCode() == http.StatusBadRequest
 }
 
 // IsUnauthorizedErr returns whether it's a 401 or not
 func IsUnauthorizedErr(err error) bool {
-	he, ok := err.(httpErr)
-	return ok && he.StatusCode() == http.StatusUnauthorized
+	e, ok := errors.Cause(err).(*httpResponseErr)
+	return ok && e.StatusCode() == http.StatusUnauthorized
 }
 
 // IsNotFoundErr returns whether it's a 404 or not
 func IsNotFoundErr(err error) bool {
-	he, ok := err.(httpErr)
-	return ok && he.StatusCode() == http.StatusNotFound
+	e, ok := errors.Cause(err).(*httpResponseErr)
+	return ok && e.StatusCode() == http.StatusNotFound
 }
 
 // IsConflictErr returns whether it's a 409 or not
 func IsConflictErr(err error) bool {
-	he, ok := err.(httpErr)
-	return ok && he.StatusCode() == http.StatusConflict
+	e, ok := errors.Cause(err).(*httpResponseErr)
+	return ok && e.StatusCode() == http.StatusConflict
 }
 
 // IsUnprocessableEntityErr returns whether it's a 422 or not
 func IsUnprocessableEntityErr(err error) bool {
-	he, ok := err.(httpErr)
-	return ok && he.StatusCode() == http.StatusUnprocessableEntity
+	e, ok := errors.Cause(err).(*httpResponseErr)
+	return ok && e.StatusCode() == http.StatusUnprocessableEntity
 }
 
 // IsInternalServerErr returns whether it's a 500 or not
 func IsInternalServerErr(err error) bool {
-	he, ok := err.(httpErr)
-	return ok && he.StatusCode() == http.StatusInternalServerError
+	e, ok := errors.Cause(err).(*httpResponseErr)
+	return ok && e.StatusCode() == http.StatusInternalServerError
 }
 
 // IsGatewayTimeoutErr returns whether it's a 504 or not
 func IsGatewayTimeoutErr(err error) bool {
-	he, ok := err.(httpErr)
-	return ok && he.StatusCode() == http.StatusGatewayTimeout
+	e, ok := errors.Cause(err).(*httpResponseErr)
+	return ok && e.StatusCode() == http.StatusGatewayTimeout
+}
+
+type httpTransportErr struct {
+	err error
+}
+
+func (he *httpTransportErr) Error() string {
+	return he.err.Error()
+}
+
+func (he *httpTransportErr) HTTPTransport() bool {
+	return true
+}
+
+func (he *httpTransportErr) Temporary() bool {
+	e, ok := he.err.(*url.Error)
+	return ok && e.Temporary()
+}
+
+func (he *httpTransportErr) Timeout() bool {
+	e, ok := he.err.(*url.Error)
+	return ok && e.Timeout()
+}
+
+func IsHTTPTransportErr(err error) bool {
+	e, ok := errors.Cause(err).(*httpTransportErr)
+	return ok && e.HTTPTransport()
+}
+
+func IsTemporaryHTTPErr(err error) bool {
+	e, ok := errors.Cause(err).(*httpTransportErr)
+	return ok && e.Temporary()
+}
+
+func IsTimeoutHTTPErr(err error) bool {
+	e, ok := errors.Cause(err).(*httpTransportErr)
+	return ok && e.Timeout()
 }
 
 // Default implements the client interface

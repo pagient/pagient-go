@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+
+	"github.com/pkg/errors"
 )
 
 const (
@@ -43,7 +45,7 @@ func (c *Default) do(rawurl, method string, in, out interface{}) error {
 		out,
 	)
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	defer body.Close()
@@ -58,9 +60,8 @@ func (c *Default) do(rawurl, method string, in, out interface{}) error {
 // Helper function to stream an HTTP request
 func (c *Default) stream(rawurl, method string, in, out interface{}) (io.ReadCloser, error) {
 	uri, err := url.Parse(rawurl)
-
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "parse url")
 	}
 
 	var buf io.ReadWriter
@@ -68,16 +69,14 @@ func (c *Default) stream(rawurl, method string, in, out interface{}) (io.ReadClo
 	if in != nil {
 		buf = new(bytes.Buffer)
 		err := json.NewEncoder(buf).Encode(in)
-
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "json encode")
 		}
 	}
 
 	req, err := http.NewRequest(method, uri.String(), buf)
-
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "new http request")
 	}
 
 	req.Header.Set(
@@ -93,9 +92,8 @@ func (c *Default) stream(rawurl, method string, in, out interface{}) (io.ReadClo
 	}
 
 	resp, err := c.client.Do(req)
-
 	if err != nil {
-		return nil, err
+		return nil, &httpTransportErr{err}
 	}
 
 	if resp.StatusCode > http.StatusPartialContent {
@@ -104,12 +102,11 @@ func (c *Default) stream(rawurl, method string, in, out interface{}) (io.ReadClo
 
 		msg := &Message{}
 		err := json.Unmarshal(out, msg)
-
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "json unmarshal")
 		}
 
-		return nil, &clientHTTPErr{
+		return nil, &httpResponseErr{
 			msg: msg.ErrorText,
 			statusCode: msg.StatusCode,
 		}

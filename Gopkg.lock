@@ -18,6 +18,14 @@
   revision = "b68f5469dff16e102bd6a2d5b3e79341c938d736"
 
 [[projects]]
+  digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
+  version = "v0.8.1"
+
+[[projects]]
   branch = "master"
   digest = "1:f8b491a7c25030a895a0e579742d07136e6958e77ef2d46e769db8eec4e58fcd"
   name = "golang.org/x/net"
@@ -60,6 +68,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/jackspirou/syscerts",
+    "github.com/pkg/errors",
     "golang.org/x/oauth2",
   ]
   solver-name = "gps-cdcl"
