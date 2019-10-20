@@ -18,7 +18,7 @@ const (
 // Patient API model
 type Patient struct {
 	ID       int          `json:"id"`
-	Ssn      string       `json:"ssn"`
+	SSN      string       `json:"ssn"`
 	Name     string       `json:"name"`
 	PagerID  int          `json:"pagerId,omitempty"`
 	ClientID int          `json:"clientId,omitempty"`

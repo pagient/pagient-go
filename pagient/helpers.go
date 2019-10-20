@@ -38,12 +38,7 @@ func (c *Default) delete(rawurl string, in interface{}) error {
 
 // Helper function to make an HTTP request
 func (c *Default) do(rawurl, method string, in, out interface{}) error {
-	body, err := c.stream(
-		rawurl,
-		method,
-		in,
-		out,
-	)
+	body, err := c.stream(rawurl, method, in)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -58,7 +53,7 @@ func (c *Default) do(rawurl, method string, in, out interface{}) error {
 }
 
 // Helper function to stream an HTTP request
-func (c *Default) stream(rawurl, method string, in, out interface{}) (io.ReadCloser, error) {
+func (c *Default) stream(rawurl, method string, in interface{}) (io.ReadCloser, error) {
 	uri, err := url.Parse(rawurl)
 	if err != nil {
 		return nil, errors.Wrap(err, "parse url")
@@ -98,16 +93,16 @@ func (c *Default) stream(rawurl, method string, in, out interface{}) (io.ReadClo
 
 	if resp.StatusCode > http.StatusPartialContent {
 		defer resp.Body.Close()
-		out, _ := ioutil.ReadAll(resp.Body)
+		body, _ := ioutil.ReadAll(resp.Body)
 
 		msg := &Message{}
-		err := json.Unmarshal(out, msg)
+		err := json.Unmarshal(body, msg)
 		if err != nil {
 			return nil, errors.Wrap(err, "json unmarshal")
 		}
 
 		return nil, &httpResponseErr{
-			msg: msg.ErrorText,
+			msg:        msg.ErrorText,
 			statusCode: msg.StatusCode,
 		}
 	}
